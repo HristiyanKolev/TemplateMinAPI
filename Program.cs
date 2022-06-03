@@ -31,12 +31,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("api/v1/commands", async (ICommandRepo repo, IMapper mapper) => {
-    var commands = await repo.GetAllCommands();
+    var commands = await repo.GetAllCommandsAsync();
     return Results.Ok(mapper.Map<IEnumerable<CommandReadDto>>(commands));
 });
 
 app.MapGet("api/v1/{id}", async (ICommandRepo repo, IMapper mapper, int id) => {
-    var command = await repo.GetCommandById(id);
+    var command = await repo.GetCommandByIdAsync(id);
     if (command != null)
     {
         return Results.Ok(mapper.Map<CommandReadDto>(command));
@@ -47,8 +47,8 @@ app.MapGet("api/v1/{id}", async (ICommandRepo repo, IMapper mapper, int id) => {
 app.MapPost("api/v1/commands", async (ICommandRepo repo, IMapper mapper, CommandCreateDto cmdCreateDto) => {
     var commandModel = mapper.Map<Command>(cmdCreateDto);
 
-    await repo.CreateCommand(commandModel);
-    await repo.SaveChanges();
+    await repo.CreateCommandAsync(commandModel);
+    await repo.SaveChangesAsync();
 
     var cmdReadDto = mapper.Map<CommandReadDto>(commandModel);
 
@@ -56,7 +56,7 @@ app.MapPost("api/v1/commands", async (ICommandRepo repo, IMapper mapper, Command
 });
 
 app.MapPut("api/v1/commands", async (ICommandRepo repo, IMapper mapper, int id, CommandUpdateDto cmdUpdateDto) => {
-    var command = await repo.GetCommandById(id);
+    var command = await repo.GetCommandByIdAsync(id);
     if (command == null)
     {
         return Results.NotFound();
@@ -64,20 +64,20 @@ app.MapPut("api/v1/commands", async (ICommandRepo repo, IMapper mapper, int id, 
 
     mapper.Map(cmdUpdateDto, command);
 
-    await repo.SaveChanges();
+    await repo.SaveChangesAsync();
 
     return Results.NoContent();
 });
 
 app.MapDelete("api/v1/{id}", async (ICommandRepo repo, IMapper mapper, int id) => {
-    var command = await repo.GetCommandById(id);
+    var command = await repo.GetCommandByIdAsync(id);
     if (command == null)
     {
         return Results.NotFound();
     }
     repo.DeleteCommand(command);
 
-    await repo.SaveChanges();
+    await repo.SaveChangesAsync();
 
     return Results.Ok();
 });
