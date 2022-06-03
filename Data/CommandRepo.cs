@@ -1,32 +1,50 @@
+using Microsoft.EntityFrameworkCore;
 using TemplateMinAPI.Models;
 
 namespace TemplateMinAPI.Data
 {
     public class CommandRepo : ICommandRepo
     {
-        public Task CreateCommand(Command cmd)
+        private readonly AppDbContext _context;
+        
+        public CommandRepo(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task CreateCommand(Command cmd)
+        {
+            if(cmd == null)
+            {
+                throw new ArgumentNullException(nameof(cmd));
+            }
+
+            await _context.AddAsync(cmd);
         }
 
         public void DeleteCommand(Command cmd)
         {
-            throw new NotImplementedException();
+            if (cmd == null )
+            {
+                throw new ArgumentNullException(nameof(cmd));
+            }
+
+            _context.Commands.Remove(cmd);
         }
 
-        public Task<IEnumerable<Command>> GetAllCommands()
+        public async Task<IEnumerable<Command>> GetAllCommands()
         {
-            throw new NotImplementedException();
+            return await _context.Commands.ToListAsync();
         }
 
-        public Task<Command?> GetCommandById(int id)
+        public async Task<Command?> GetCommandById(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Commands.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public Task SaveChanges()
+        public async Task SaveChanges()
         {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
     }
 }
